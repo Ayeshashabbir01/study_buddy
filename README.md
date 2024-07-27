@@ -19,6 +19,11 @@
 16. Run the command `python manage.py startapp base` to create the new application in the django project.
 17. Run the command `python manage.py runserver` to run the server application.
 18. Run the command `cd../` to one back to the folder.And run the `ls -a ` command to show all the files including the .gitignore.
-19. Run the command `git add`to add all changes in the current directories. And `git commit`to commit the message "Steps to initiate django".
+19. Run the command `git add .`to add all changes in the current directories. And `git commit`to commit the message "Steps to initiate django".
 20. Run the command `git push` to push to the github.
+
+# study_buddy:
+1. config the base in the core folder of the file settings.py,then the django knows about the apps.
+![alt text](image.png)
+2. 
 
