@@ -45,6 +45,13 @@
 ![alt text](image-3.png)
 
 so we have two views and two urls.
-6. 
+6. # Errors:
+    We have two urls but django does not know about this;
+
+    1. Go to the project urls files,
+    2. import include function,
+    3. Give the include path `path('',include('base.urls'))`.
+
+
 
     
