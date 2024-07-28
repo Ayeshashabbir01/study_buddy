@@ -45,6 +45,7 @@
 ![alt text](image-3.png)
 
 so we have two views and two urls.
+
 6. # Errors:
     We have two urls but django does not know about this;
 
