@@ -24,6 +24,11 @@
 
 # study_buddy:
 1. config the base in the core folder of the file settings.py,then the django knows about the apps.
+2. Make two views **Home** and **Room** using HTTPResponse.
+
 ![alt text](image.png)
-2. 
+
+![alt text](image-1.png)
+
+3. 
 
