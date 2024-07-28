@@ -30,5 +30,19 @@
 
 ![alt text](image-1.png)
 
-3. 
+3. Go to the app and create the urls file to handle all the route just for these app.
+4. we have to urls files,
+   1. # urls.py(base): 
+   is for apps urls files and for specific app.
+   2. # urls.py(studybud):
+   is for route directory url files and for project.
+5. we can import the views in the apps urls files and give the specific path by its name.
 
+![alt text](image-2.png)
+
+![alt text](image-3.png)
+
+so we have two views and two urls.
+6. 
+
+    
