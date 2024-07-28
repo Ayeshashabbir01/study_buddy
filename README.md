@@ -53,6 +53,9 @@ so we have two views and two urls.
     2. import include function,
     3. Give the include path `path('',include('base.urls'))`.
 
+# Templates:
+1. Go to the main project settings folder,in templates just write `BASE_DIR / 'templates'`to update the django about the templates.
+2. 
 
 
     
