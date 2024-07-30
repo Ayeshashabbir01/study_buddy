@@ -39,12 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     
-     
+    'base.apps.BaseConfig',
 ]
-EXTERNAL_APPS=[
-    'base'
-]
-INSTALLED_APPS += EXTERNAL_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
