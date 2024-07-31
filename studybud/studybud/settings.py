@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     
     
     'base.apps.BaseConfig',
+
 ]
 
 MIDDLEWARE = [
@@ -57,10 +58,7 @@ ROOT_URLCONF = 'studybud.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-
-            BASE_DIR / 'templates'
-        ],
+        'DIRS': [ BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
