@@ -9,12 +9,12 @@
    
 </head>
 <body>
-    [% include 'navbar.html' %]
-
-    
-    [% block content %]
+    {% include 'navbar.html' %}
 
 
-    [ % end block %]
+    {% block content %}
+
+
+     {% endblock %}
 </body>
 </html>
