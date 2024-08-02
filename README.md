@@ -35,14 +35,19 @@
 
    1. # urls.py(base): 
    is for apps urls files and for specific app.
+```py
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('', views.home, name="home"),
+    path('room/', views.room, name="room"),
+]
+```
 
    2. # urls.py(studybud):
    is for route directory url files and for project.
 5. we can import the views in the apps urls files and give the specific path by its name.
-
-![alt text](image-2.png)
-
-![alt text](image-3.png)
 
 so we have two views and two urls.
 
