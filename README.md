@@ -54,7 +54,7 @@ INSTALLED_APPS = [
 2. Go to the app and create the urls file to handle all the route just for these app.
  
 ```py
- 3.#import  views in  apps urls files ,give the specific path by its name.
+ 3.#// studybud/base/urls.py
 from django.urls import path
 from . import views
 
@@ -65,16 +65,88 @@ urlpatterns = [
 ```
 so we have two views and two urls.
 
-6. # Errors:
-    We have two urls but django does not know about this;
-
-    1. Go to the project urls files,
-    2. import include function,
-    3. Give the include path `path('',include('base.urls'))`.
+6. 
+```py
+# /studybud/urls.py
+urlpatterns = [
+    # .....
+    path('', include('base.urls')),
+]
+```
 
 # Templates:
-1. 
-2. 
+1.create templates,and update the django that we have a templates .
+```py 
+ #settings.py
+ TEMPLATES = [
+    BASE_DIR / 'templates'
+ ],
+ ```
+2. create four files in these templates `home.html`,`room.html`,`main.html`, `navbar.html`.
+
+```py
+# home.html
+{% extends "main.html" %}
+
+ {% block content  %} 
+
+ <h1>Home Template</h1>
+
+<div>
+    <div>
+        {% for room in rooms %}
+            <div>
+                <h5>{{room.id}} -- <a href="{% url 'room' room.id %}">{{room.name}}</a></h5>
+            </div>
+            
+        {% endfor %}
+    </div>
+    
+</div>
+
+ {% endblock content %}
+ ```
+```py
+# room.html
+{% include 'navbar.html' %}
+
+{% block content %}
+
+<h1>{{room.name}}</h1>
+
+{% endblock content %}
+```
+
+```py 
+# navbar.html
+<a href="/">
+    <h1>LOGO</h1>
+</a>
+
+<hr>
+```
+
+```py
+#main.html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>StudyBud</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--link rel='stylesheet' type='text/css' media='screen' href='main.css'-->
+    
+</head>
+<body>
+    {% include "navbar.html" %}
+    
+    {% block content %}
+    
+    {% endblock content %}
+</body>
+</html>
+```
 
 
     
