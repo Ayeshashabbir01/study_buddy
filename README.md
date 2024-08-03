@@ -22,18 +22,39 @@
 19. Run the command `git add .`to add all changes in the current directories. And `git commit`to commit the message "Steps to initiate django".
 20. Run the command `git push` to push to the github.
 
-# study_buddy:
-1. config the base in the core folder of the file settings.py,then the django knows about the apps.
-2. Make two views **Home** and **Room** using HTTPResponse.
-3. Go to the app and create the urls file to handle all the route just for these app.
-4. we have to urls files,
+# `API:`
+>1. we will send a GET request to the django View the View will which will send a request to the database, our database will send that data back to the view, the view will serialize that data and send it back to the client.
 
-   1. # urls.py(base): 
-   is for apps urls files and for specific app.
-   2. # urls.py(studybud):
-   is for route directory url files and for project.
-5. we can import the views in the apps urls files and give the specific path by its name.
+>2. when we are sending the data, we will send the form data from the frontEnd.
+
+`Virtual Environment`
+
 ```py
+pip install virtualenv
+virtualenv venv
+source env/Scripts/activate
+```
+To activate the virtual environment.
+
+` Building base app`
+```py
+ python manage.py runserver
+ python manage.py startapp base
+ ```
+configure your base app in the settings.py.
+
+```py 
+# settings.py
+INSTALLED_APPS = [
+ # ......
+     'base.apps.BaseConfig',
+]
+```
+
+2. Go to the app and create the urls file to handle all the route just for these app.
+ 
+```py
+ 3.#import  views in  apps urls files ,give the specific path by its name.
 from django.urls import path
 from . import views
 
@@ -42,7 +63,6 @@ urlpatterns = [
     path('room/', views.room, name="room"),
 ]
 ```
-
 so we have two views and two urls.
 
 6. # Errors:
@@ -53,7 +73,7 @@ so we have two views and two urls.
     3. Give the include path `path('',include('base.urls'))`.
 
 # Templates:
-1. Go to the main project settings folder,in templates just write `BASE_DIR / 'templates'`to update the django about the templates.
+1. 
 2. 
 
 
