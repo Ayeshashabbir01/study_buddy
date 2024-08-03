@@ -25,16 +25,14 @@
 # study_buddy:
 1. config the base in the core folder of the file settings.py,then the django knows about the apps.
 2. Make two views **Home** and **Room** using HTTPResponse.
-
-![alt text](image.png)
-
-![alt text](image-1.png)
-
 3. Go to the app and create the urls file to handle all the route just for these app.
 4. we have to urls files,
 
    1. # urls.py(base): 
    is for apps urls files and for specific app.
+   2. # urls.py(studybud):
+   is for route directory url files and for project.
+5. we can import the views in the apps urls files and give the specific path by its name.
 ```py
 from django.urls import path
 from . import views
@@ -44,10 +42,6 @@ urlpatterns = [
     path('room/', views.room, name="room"),
 ]
 ```
-
-   2. # urls.py(studybud):
-   is for route directory url files and for project.
-5. we can import the views in the apps urls files and give the specific path by its name.
 
 so we have two views and two urls.
 
