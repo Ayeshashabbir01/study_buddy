@@ -1,6 +1,6 @@
 # study_buddy
 
-# Steps to initiate django:
+# `Steps to initiate django:`
 1. go to the projects directory in your local system and then RUN the command `ls` in your git bash terminal it will show you all the files in that directory.
 2. Run the command `cd Document` to safe all the files in that folder.
 3. Run the command `ls` to show the all the lists of the files.
@@ -74,7 +74,7 @@ urlpatterns = [
 ]
 ```
 
-# Templates:
+# `Templates:`
 1.create templates,and update the django that we have a templates .
 ```py 
  #settings.py
