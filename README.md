@@ -116,7 +116,7 @@ urlpatterns = [
 
 {% endblock content %}
 ```
-
+`In navbar.html, we can use different tags to create different styles.`
 ```py 
 # navbar.html
 <a href="/">
@@ -125,6 +125,7 @@ urlpatterns = [
 
 <hr>
 ```
+`In main.html, we can encapsulates all the templates in our projects`
 
 ```py
 #main.html
@@ -147,7 +148,7 @@ urlpatterns = [
 </body>
 </html>
 ```
-
+we can create new folder `templates` inside ourapp,in `templates` we create `base` folder and paste the `home.html`and `room.html`.
 ```py
 #// studybud/base/views.py
 from django.shortcuts import render
@@ -179,4 +180,65 @@ urlpatterns = [
     path('room/<str:pk>/', views.room, name="room"),
 ]
 ```
-    
+In home.html we can add the link here.
+```py 
+# adding the link in the middlewere,
+  <h5>{{room.id}} -- <a href="{% url 'room' room.id %}">{{room.name}}</a></h5>
+```
+```py 
+#//  studybud/base/views.py
+def room(request, pk):
+    room = None
+    for i in rooms:
+        if i['id'] == int(pk):
+            room = i
+    context = {'room': room}
+    return render(request, 'base/room.html', context)
+```
+pass the value in `room.html`.
+```py
+# adding value in the middleware,
+<h1>{{room.name}}</h1>
+```
+# `Database And Admin Panel:`
+```py 
+# Steps to create database:
+1. python manage.py  make migrations
+2. python manage.py migrate
+3. python manage.py createsuperuser
+4. set the credentials
+5. python manage.py runserver
+6. go to the admin panel
+
+```
+# `Modelling`
+we will model our data in `models.py`.
+```py 
+# create room in the model.py
+from django.db import models
+
+# Create your models here.
+class Room(models.Model):
+    # host 
+    # topic 
+    name = models.CharField(max_length=200)
+    description = models.TextField(null=True,blank=True)
+    # participants 
+    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def _str_(self):
+        return self.name 
+```
+now we have to migrate our database and Register that room model to the admin.py.
+```py
+python manage.py migrate
+python manage.py runserver
+```
+```py 
+# register the model in admin.py
+from django.contrib import admin
+# Register your models here.
+from .models import Room
+admin.site.register(Room)
+```
