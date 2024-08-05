@@ -289,8 +289,11 @@ class Message(models.Model):
     def __str__(self):
         return self.body[0:50]
 ```
-`and then register all those models in the admin.py`
-
+`now we have to migrate our database and Register that Product model to the admin.py`
+```py
+ python manage.py makemigrations
+ python manage.py migrate
+```
 ```py
 # admin.py
 from django.contrib import admin
