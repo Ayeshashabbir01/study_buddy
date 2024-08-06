@@ -51,10 +51,10 @@ INSTALLED_APPS = [
 ]
 ```
 
-2. Go to the app and create the urls file to handle all the route just for these app.
+ Go to the app and create the urls file to handle all the route just for these app.
  
 ```py
- 3.#// studybud/base/urls.py
+ #// studybud/base/urls.py
 from django.urls import path
 from . import views
 
@@ -65,7 +65,7 @@ urlpatterns = [
 ```
 so we have two views and two urls.
 
-6. 
+
 ```py
 # /studybud/urls.py
 urlpatterns = [
@@ -75,17 +75,17 @@ urlpatterns = [
 ```
 
 # `Templates:`
-1.create templates,and update the django that we have a templates .
+1. create templates,and update the django that we have a templates .
 ```py 
- #settings.py
+ #// studybud/settings.py/TEMPLATES
  TEMPLATES = [
     BASE_DIR / 'templates'
  ],
  ```
-2. create four files in these templates `home.html`,`room.html`,`main.html`, `navbar.html`.
+2. create four files in these templates folder `home.html`,`room.html`,`main.html`, `navbar.html`.
 
 ```py
-# home.html
+#// studybud/templates/home.html
 {% extends "main.html" %}
 
  {% block content  %} 
@@ -107,7 +107,7 @@ urlpatterns = [
  {% endblock content %}
  ```
 ```py
-# room.html
+# //studybud/templates/room.html
 {% include 'navbar.html' %}
 
 {% block content %}
@@ -118,17 +118,17 @@ urlpatterns = [
 ```
 `In navbar.html, we can use different tags to create different styles.`
 ```py 
-# navbar.html
+# // studybud/templates/navbar.html
 <a href="/">
     <h1>LOGO</h1>
 </a>
 
 <hr>
 ```
-`In main.html, we can encapsulates all the templates in our projects`
+In main.html, we can encapsulates all the templates in our projects.
 
 ```py
-#main.html
+# // studybud/templates/main.html
 <!DOCTYPE html>
 <html>
 <head>
@@ -148,12 +148,11 @@ urlpatterns = [
 </body>
 </html>
 ```
-we can create new folder `templates` inside ourapp,in `templates` we create `base` folder and paste the `home.html`and `room.html`.
+To organize our project, create a `templates` folder inside the `ourapp` directory. Inside `templates`, create a `base` subfolder. Move `home.html` and `room.html` into the `base` subfolder. This structure separates specific templates from those used throughout the app.
+
 ```py
 #// studybud/base/views.py
 from django.shortcuts import render
-
-
 rooms = [
     {'id': 1, 'name': 'lets learn python!'},
     {'id': 2, 'name': 'Design with me.'},
@@ -180,10 +179,29 @@ urlpatterns = [
     path('room/<str:pk>/', views.room, name="room"),
 ]
 ```
-In home.html we can add the link here.
+In home.html we can add the link here. to show the room id and its name.
 ```py 
-# adding the link in the middlewere,
+{% extends "main.html" %}
+
+ {% block content  %} 
+
+ <h1>Home Template</h1>
+
+<div>
+    <div>
+        {% for room in rooms %}
+            <div>
+             # adding the link here,
   <h5>{{room.id}} -- <a href="{% url 'room' room.id %}">{{room.name}}</a></h5>
+               
+            </div>
+            
+        {% endfor %}
+    </div>
+    
+</div>
+
+ {% endblock content %}
 ```
 ```py 
 #//  studybud/base/views.py
@@ -195,10 +213,17 @@ def room(request, pk):
     context = {'room': room}
     return render(request, 'base/room.html', context)
 ```
-pass the value in `room.html`.
+
 ```py
-# adding value in the middleware,
+# //studybud/templates/base/room.html
+{% include 'navbar.html' %}
+
+{% block content %}
+
 <h1>{{room.name}}</h1>
+
+{% endblock content %}
+
 ```
 # `Database And Admin Panel:`
 ```py 
@@ -206,13 +231,14 @@ pass the value in `room.html`.
 1. python manage.py  make migrations
 2. python manage.py migrate
 3. python manage.py createsuperuser
-4. set the credentials
-5. python manage.py runserver
-6. go to the admin panel
-
+4. python manage.py runserver
 ```
+go to the admin panel.
+
+
 # `Modelling`
-we will model our data in `models.py`.
+In modelling , defining the structure of our database tables using Python classes. Each class represents a database table, and each attribute of the class represents a column in that table. This allows you to interact with your database using Python code .
+so, we will model our data in `models.py`.
 ```py 
 # create room in the model.py
 from django.db import models
@@ -253,6 +279,8 @@ Steps:
 5. add room in the room model from admin panel.
 ```
 # `Now Adding more Models`
+ 1. Each model represents different data, like users, posts, or comments. 
+ 2. so, we can add more models to make the code easier to maintain and update easily.
 ```py
 # models.py
 from django.db import models
@@ -289,11 +317,12 @@ class Message(models.Model):
     def __str__(self):
         return self.body[0:50]
 ```
-`now we have to migrate our database and Register that Product model to the admin.py`
+now we have to migrate our database and Register that model to the admin.py,
 ```py
  python manage.py makemigrations
  python manage.py migrate
 ```
+when we can registering our model,this makes it easy to add, edit, and delete data directly from the admin panel.
 ```py
 # admin.py
 from django.contrib import admin
