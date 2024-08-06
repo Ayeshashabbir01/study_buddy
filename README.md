@@ -77,7 +77,7 @@ urlpatterns = [
 # `Templates:`
 1. create templates,and update the django that we have a templates .
 ```py 
- #// studybud/settings.py/TEMPLATES
+ # studybud/settings.py/TEMPLATES
  TEMPLATES = [
     BASE_DIR / 'templates'
  ],
@@ -181,6 +181,7 @@ urlpatterns = [
 ```
 In home.html we can add the link here. to show the room id and its name.
 ```py 
+# studybud/templates/main.html
 {% extends "main.html" %}
 
  {% block content  %} 
