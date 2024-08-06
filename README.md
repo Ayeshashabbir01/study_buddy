@@ -116,7 +116,7 @@ urlpatterns = [
 
 {% endblock content %}
 ```
-`In navbar.html, we can use different tags to create different styles.`
+In navbar.html, we can use different tags to create different styles.
 ```py 
 # // studybud/templates/navbar.html
 <a href="/">
@@ -279,8 +279,7 @@ Steps:
 5. add room in the room model from admin panel.
 ```
 # `Now Adding more Models`
- 1. Each model represents different data, like users, posts, or comments. 
- 2. so, we can add more models to make the code easier to maintain and update easily.
+  Each model represents different data, like users, posts, or comments. so, we can add more models to make the code easier to maintain and update easily.
 ```py
 # models.py
 from django.db import models
