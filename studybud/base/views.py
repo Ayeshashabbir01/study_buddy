@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect
-from .models import Room , Topic
+from .models import Room,Topic
 from .forms import RoomForm
+from django.db.models import Q
 #rooms = [
 #    {'id': 1, 'name': 'lets learn python!'},
 #    {'id': 2, 'name': 'Design with me.'},
@@ -8,12 +9,16 @@ from .forms import RoomForm
 #]
 
 def home(request):
-    q = request.Get.get('q')
-    rooms = Room.objects.filter(topic_name=q)
+    q = request.GET.get('q') if request.GET.get('q') is not None else ''
 
-    topics = Topic.objects.all()
-
-    context = {'rooms': rooms , 'topics': topics}
+    rooms = Room.objects.filter(
+        Q(topic__name__icontains=q) |
+        Q(name__icontains=q)|
+        Q(description__icontains=q)
+        )
+    topics= Topic.objects.all()
+    room_count = rooms.count()
+    context = {'rooms': rooms,'topics':topics ,'room_count':room_count}
     return render(request, 'base/home.html', context)
 
 def room(request,pk):
@@ -51,4 +56,4 @@ def deleteRoom(request, pk):
      if request.method == 'POST':
         room.delete()
         return redirect('home')
-     return render(request, 'base/delete.html',{'obj':room})
+     return render(request, 'base/delete.html', {'obj': room})
