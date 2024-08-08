@@ -337,7 +337,8 @@ admin.site.register(Topic)
 
 admin.site.register(Message)
 ```
-#`CRUD`
+# `CRUD`
+
 CRUD stands for Create, Read, Update, and Delete, which are the four basic operations for managing data in a database.
 1. we can create the `room_form.html` file inside the base app firstly we can input to the `submit button` and create a room using function in views.py.
 ```py
@@ -553,8 +554,9 @@ In search we can search the room manually by its author name, text, name of topi
 
  {% endblock content %}
  ```
- # studybud/base/views.py
+
  ```py
+ # studybud/base/views.py
  from django.shortcuts import render,redirect
 from .models import Room,Topic
 from .forms import RoomForm
