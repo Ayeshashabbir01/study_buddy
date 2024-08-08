@@ -631,6 +631,212 @@ we can search  and count the rooms by using GET method.
 
 <hr>
 ```
+# `User Login/logout`
+
+`Login`
+A form where users enter their username and password to access the website.
+`Logout`
+A button that users click to end their session and log out of the website.
+
+ we can create the file `login_register.html` and register the user.
+ ```py
+# studybud/templates/base/login_register.html
+{% extends 'main.html' %}
+{% block content %}
+<div>
+<form method="POST" action="">
+{% csrf_token %}
+<label>Username: </label>
+<input type="text" name="username" placeholder="Enter Username" />
+<br>
+<label>Password: </label>
+<input type="password" name="password" placeholder="Enter Password" />
+<br>
+<input type="submit" value="Login" />
+</form>
+</div>
+{% endblock content %}
+```
+now create view for this login page.
+
+```py
+#studybud/base/views.py
+def loginPage(request):
+    context = {}
+    return render(request, 'base/login_register.html', context)
+```
+```py
+#studybud/base/urls.py
+urlpatterns = [
+    path('login/',views.loginPage, name="login"),
+]
+```
+
+```py
+# studybud/base/views.py
+
+from django.shortcuts import render,redirect
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate , login,logout
+from django.contrib import messages
+from .models import Room,Topic
+from .forms import RoomForm
+from django.db.models import Q
+#rooms = [
+#    {'id': 1, 'name': 'lets learn python!'},
+#    {'id': 2, 'name': 'Design with me.'},
+#    {'id': 3, 'name': 'Frontend developer.'},
+#]
+
+def loginPage(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        try:
+            user = User.objects.get(username=username)
+          
+        except User.DoesNotExist:
+            messages.error(request, 'User does not exist')
+        user=authenticate(request,username=username,password=password)
+        if user is not None:
+            login(request,user)
+            return redirect('home')
+        else:
+            messages.error(request,'Username or Password does not  exist')
+
+    context = {}
+    return render(request, 'base/login_register.html', context)
+ 
+def logoutUser(request):
+    logout(request)
+    return redirect('home')
+
+
+def home(request):
+    q = request.GET.get('q') if request.GET.get('q') is not None else ''
+
+    rooms = Room.objects.filter(
+        Q(topic__name__icontains=q) |
+        Q(name__icontains=q)|
+        Q(description__icontains=q)
+        )
+    topics= Topic.objects.all()
+    room_count = rooms.count()
+    context = {'rooms': rooms,'topics':topics ,'room_count':room_count}
+    return render(request, 'base/home.html', context)
+
+def room(request,pk):
+    room = Room.objects.get(id=pk)
+    context = {'room': room}
+    return render(request, 'base/room.html', context)
+
+def createRoom(request):
+    form=RoomForm()
+    if request.method == 'POST': 
+        form = RoomForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('home')  
+    context = {"form":form}
+    return render(request, 'base/room_form.html', context)
+
+
+def updateRoom (request, pk):
+    room =Room.objects.get(id=pk)
+    form = RoomForm(instance=room)
+
+    if request.method == 'POST':
+        form = RoomForm(request.POST,instance=room)
+        if form.is_valid():
+            form.save()
+            return redirect('home') 
+        
+    context = {'form': form}
+    return render(request, 'base/room_form.html', context)
+     
+
+def deleteRoom(request, pk):
+     room =Room.objects.get(id=pk)
+     if request.method == 'POST':
+        room.delete()
+        return redirect('home')
+     return render(request, 'base/delete.html', {'obj': room})
+```
+```py
+# studybud/base/urls.py
+from django.urls import path
+from.import views
+urlpatterns = [
+    path('login/',views.loginPage, name="login"),
+    path('logout/',views.logoutUser, name="logout"),
+    
+    path("",views.home, name="home"),
+    path('room/<str:pk>/',views.room,name="room"),
+    path('create-room/', views.createRoom, name='create-room'),
+    path('update-room/<str:pk>', views.updateRoom, name='update-room'),
+    path('delete-room/<str:pk>', views.deleteRoom, name='delete-room'),
+
+
+]
+```
+
+```py
+# base/templates/main.html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>StudyBud</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--link rel='stylesheet' type='text/css' media='screen' href='main.css'-->
+    
+</head>
+<body>
+    {% include "navbar.html" %}
+    
+    {% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li></li>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+    {% block content %}
+    
+    {% endblock content %}
+</body>
+</html>
+```
+
+```py
+# base/navbar.html
+<a href="/">
+    <h1>LOGO</h1>
+</a>
+<form method="GET" action="{% url 'home' %}">
+    <input type="text" name="q" placeholder="Search Rooms..." />
+    <button type="submit">Search</button>
+</form>
+{% if request.user.is_authenticated %}
+<a href="{% url 'logout' %}">Logout</a>
+{% else %}
+<a href="{% url 'login'%}">Login</a>
+{% endif %}
+
+<hr>
+```
+
+# `Restricted Pages`
+
+
+
+
+
+
+
+
 
 
 
