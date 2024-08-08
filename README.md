@@ -460,6 +460,11 @@ urlpatterns = [
 
 ]
 ```
+Each model in models.py represents a different entity in our application. For example:
+Topic represents a discussion topic.
+Room represents a chat room or discussion room.
+Message represents a message posted in a room.
+Thats why we create different models for different purpose.
 
 ```py
 # studybud/base/models.py
@@ -555,6 +560,7 @@ In search we can search the room manually by its author name, text, name of topi
  {% endblock content %}
  ```
 
+ Users can manage discussion rooms by searching for rooms based on topics, names, or descriptions, as well as creating, updating, and deleting rooms. 
  ```py
  # studybud/base/views.py
  from django.shortcuts import render,redirect
@@ -617,7 +623,7 @@ def deleteRoom(request, pk):
         return redirect('home')
      return render(request, 'base/delete.html', {'obj': room})
 ```
-we can search  and count the rooms by using GET method.
+we can search  and count the  numbers of rooms by using GET method.
 ```py
 # studybud/templates/navbar.html
 <a href="/">
@@ -671,7 +677,7 @@ urlpatterns = [
     path('login/',views.loginPage, name="login"),
 ]
 ```
-
+we can create the loginpage , users can login the page and access the website and  user can also logout ,update and delete the room.
 ```py
 # studybud/base/views.py
 
@@ -687,6 +693,7 @@ from django.db.models import Q
 #    {'id': 2, 'name': 'Design with me.'},
 #    {'id': 3, 'name': 'Frontend developer.'},
 #]
+
 
 def loginPage(request):
     if request.method == 'POST':
@@ -761,7 +768,8 @@ def deleteRoom(request, pk):
         room.delete()
         return redirect('home')
      return render(request, 'base/delete.html', {'obj': room})
-```
+``` 
+and then give the urls of our views  functions to access the different pages in our website.
 ```py
 # studybud/base/urls.py
 from django.urls import path
@@ -809,7 +817,7 @@ urlpatterns = [
 </body>
 </html>
 ```
-
+we can set a frame to search different rooms by its author name ,text, name of topic etc and also check the user authenticatons through  login and logout.
 ```py
 # base/navbar.html
 <a href="/">
@@ -828,7 +836,175 @@ urlpatterns = [
 <hr>
 ```
 
-# `Restricted Pages`
+# `User Registeration`
+In user Registeration we can manage user login and registration. It provides forms for users to log in or sign up, handles the authentication process, and allows new users to create accounts and log in automatically.
+
+```py
+# studybud/template/base/login_register.html
+{% extends 'main.html' %}
+{% block content %}
+
+
+{% if page == 'login' %}
+
+<div>
+<form method="POST" action="">
+{% csrf_token %}
+<label>Username: </label>
+<input type="text" name="username" placeholder="Enter Username" />
+<br>
+<label>Password: </label>
+<input type="password" name="password" placeholder="Enter Password" />
+<br>
+<input type="submit" value="Login" />
+</form>
+
+<p>havent signed up yet?</p>
+
+<a href="{% url 'register' %}">Sign up</a>
+
+</div>
+{% else %}
+<div>
+    <form method="POST" action="">
+        {% csrf_token %}
+        {{form.as_p}}
+    <input type="submit" value="Register"/>
+    </form>
+    <p>Already signed up yet?</p>
+    <a href="{% url 'login' %}">Login</a>
+</div>
+
+{% endif %}
+
+{% endblock content %}
+```
+
+
+```py
+# studybud/base/views
+
+from django.shortcuts import render,redirect
+from django.contrib.auth.models import User
+from django.http import HttpResponse
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import authenticate , login,logout
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import Room,Topic
+from .forms import RoomForm
+from django.db.models import Q
+#rooms = [
+#    {'id': 1, 'name': 'lets learn python!'},
+#    {'id': 2, 'name': 'Design with me.'},
+#    {'id': 3, 'name': 'Frontend developer.'},
+#]
+
+def loginPage(request):
+    page = 'login' 
+    if request.user.is_authenticated:
+         return redirect('home')
+
+
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        try:
+            user = User.objects.get(username=username)
+          
+        except User.DoesNotExist:
+            messages.error(request, 'User does not exist')
+        user=authenticate(request,username=username,password=password)
+        if user is not None:
+            login(request,user)
+            return redirect('home')
+        else:
+            messages.error(request,'Username or Password does not  exist')
+
+    context = { 'page': page}
+    return render(request, 'base/login_register.html', context)
+ 
+def logoutUser(request):
+    logout(request)
+    return redirect('home')
+
+def registerPage(request):
+    form = UserCreationForm()
+
+    if request.method == 'Post':
+        form = UserCreationForm(request.Post)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.username = user.username.lower()
+            user.save()
+            login(request, user)
+            return redirect('home')
+        else:
+            messages.error(request, 'An error occured during registerations')
+            
+    return render(request, 'base/login_register.html',{'form': form })
+
+
+def home(request):
+    q = request.GET.get('q') if request.GET.get('q') is not None else ''
+
+    rooms = Room.objects.filter(
+        Q(topic__name__icontains=q) |
+        Q(name__icontains=q)|
+        Q(description__icontains=q)
+        )
+    topics= Topic.objects.all()
+    room_count = rooms.count()
+    context = {'rooms': rooms,'topics':topics ,'room_count':room_count}
+    return render(request, 'base/home.html', context)
+
+def room(request,pk):
+    room = Room.objects.get(id=pk)
+    context = {'room': room}
+    return render(request, 'base/room.html', context)
+
+def createRoom(request):
+    form=RoomForm()
+    if request.method == 'POST': 
+        form = RoomForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('home')  
+    context = {"form":form}
+    return render(request, 'base/room_form.html', context)
+
+@login_required(login_url='login')
+def updateRoom (request, pk):
+    room =Room.objects.get(id=pk)
+    form = RoomForm(instance=room)
+
+    if request.user != room.host:
+        return HttpResponse('you are not allowed here!!')
+    
+
+    if request.method == 'POST':
+        form = RoomForm(request.POST,instance=room)
+        if form.is_valid():
+            form.save()
+            return redirect('home') 
+        
+    context = {'form': form}
+    return render(request, 'base/room_form.html', context)
+     
+
+def deleteRoom(request, pk):
+     room =Room.objects.get(id=pk)
+
+     if request.user != room.host:
+        return HttpResponse('you are not allowed here!!')
+     
+     if request.method == 'POST':
+        room.delete()
+        return redirect('home')
+     return render(request, 'base/delete.html', {'obj': room})
+     ```
+
+
 
 
 
