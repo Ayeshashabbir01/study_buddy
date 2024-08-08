@@ -28,7 +28,7 @@ def room(request,pk):
 
 def createRoom(request):
     form=RoomForm()
-    if request.method == 'POST':
+    if request.method == 'POST': 
         form = RoomForm(request.POST)
         if form.is_valid():
             form.save()

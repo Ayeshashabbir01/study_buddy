@@ -337,5 +337,300 @@ admin.site.register(Topic)
 
 admin.site.register(Message)
 ```
+#`CRUD`
+CRUD stands for Create, Read, Update, and Delete, which are the four basic operations for managing data in a database.
+1. we can create the `room_form.html` file inside the base app firstly we can input to the `submit button` and create a room using function in views.py.
+```py
+# studybud/base/room_forms.html
+{% extends 'main.html' %}
+
+{% block content %}
+  <div>
+    <form method="POST" action="">
+      {% csrf_token %}
+      {{form.as_p}}
+      <input type="submit" value="Submit" />
+    </form>
+  </div>
+{% endblock content %}
+```
+
+2. create python file `forms.py` ,import model Room and access all the fileds of that model.
+```py
+#studybud/base/forms.py
+from django.forms import ModelForm
+from .models import Room
+
+class RoomForm(ModelForm):
+    class Meta:
+        model = Room
+        fields = '__all__'
+
+```
+```py
+#studybud/base/delete.html
+{% extends 'main.html' %}
+
+{% block content %}
+    <form method="POST" action="">
+        {% csrf_token %}
+        <p>Are you sure you want to delete "{{ obj }}"?</p>
+        <a href="{{ request.META.HTTP_REFERER }}">Go Back</a>
+        <input type="submit" value="Confirm" />
+    </form>
+{% endblock content %}
+```
+3. In views.py we can create ,update and delete the room.
+```py
+#studybud/base/views.py
+from django.shortcuts import render,redirect
+from .models import Room,Topic
+from .forms import RoomForm
+from django.db.models import Q
+#rooms = [
+#    {'id': 1, 'name': 'lets learn python!'},
+#    {'id': 2, 'name': 'Design with me.'},
+#    {'id': 3, 'name': 'Frontend developer.'},
+#]
+
+def home(request):
+    q = request.GET.get('q') if request.GET.get('q') is not None else ''
+
+    rooms = Room.objects.filter(
+        Q(topic__name__icontains=q) |
+        Q(name__icontains=q)|
+        Q(description__icontains=q)
+        )
+    topics= Topic.objects.all()
+    room_count = rooms.count()
+    context = {'rooms': rooms,'topics':topics ,'room_count':room_count}
+    return render(request, 'base/home.html', context)
+
+def room(request,pk):
+    room = Room.objects.get(id=pk)
+    context = {'room': room}
+    return render(request, 'base/room.html', context)
+
+def createRoom(request):
+    form=RoomForm()
+    if request.method == 'POST': 
+        form = RoomForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('home')  
+    context = {"form":form}
+    return render(request, 'base/room_form.html', context)
+
+
+def updateRoom (request, pk):
+    room =Room.objects.get(id=pk)
+    form = RoomForm(instance=room)
+
+    if request.method == 'POST':
+        form = RoomForm(request.POST,instance=room)
+        if form.is_valid():
+            form.save()
+            return redirect('home') 
+        
+    context = {'form': form}
+    return render(request, 'base/room_form.html', context)
+     
+
+def deleteRoom(request, pk):
+     room =Room.objects.get(id=pk)
+     if request.method == 'POST':
+        room.delete()
+        return redirect('home')
+     return render(request, 'base/delete.html', {'obj': room})
+```
+```py
+#studybud/base/url.py
+from django.urls import path
+from.import views
+urlpatterns = [
+    
+    
+    path("",views.home, name="home"),
+    path('room/<str:pk>/',views.room,name="room"),
+    path('create-room/', views.createRoom, name='create-room'),
+    path('update-room/<str:pk>', views.updateRoom, name='update-room'),
+    path('delete-room/<str:pk>', views.deleteRoom, name='delete-room'),
+
+
+]
+```
+
+```py
+# studybud/base/models.py
+from django.db import models
+from django.contrib.auth.models import User
+
+# Create your models here.
+
+class Topic(models.Model):
+    name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.name
+
+
+class Room(models.Model):
+    host = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    topic = models.ForeignKey(Topic, on_delete=models.SET_NULL, null=True)
+    name = models.CharField(max_length=200)
+    description = models.TextField(null=True, blank=True)
+    # participants 
+    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-updated', '-created']
+
+    def __str__(self):
+        return self.name  
+
+
+class Message(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    body = models.TextField()
+    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.body[0:50]
+```
+# `Search`
+A search form has a text box and a submit button. When we enter our search words and press the button, the website processes our request and displays the results.
+In search we can search the room manually by its author name, text, name of topic. 
+```py
+# studybud/templates/base/home.html
+{% extends "main.html" %}
+ {% block content  %} 
+
+ <style>
+    .home-container {
+        display: grid;
+        grid-template-columns: 1fr 3fr;
+    }
+ </style>
+    
+
+<div class='home-container'>
+    <div>
+        <h3>Browse Topics</h3>
+        <hr>
+        <div>
+            <a href="{% url 'home'%}">All</a>
+        </div>
+
+        {% for topic in topics %}
+        <div>
+            <a href="{% url 'home' %}?q={{topic.name}}">{{topic.name}}</a>
+        </div>
+        {% endfor %}
+    </div>
+    <div>
+        <h5>{{room_count}} rooms available</h5>
+        <a href="{% url 'create-room' %}">Create Room</a>
+
+    <div>
+        {% for room in rooms %}
+            <div>
+                <a href="{% url 'update-room' room.id %}">Edit</a>
+                <a href="{% url 'delete-room' room.id %}">Delete</a>
+                <span>@{{room.host.username}}</span>
+                <h5> -- <a href="{% url 'room' room.id %}">{{ room.name }}</a></h5>
+           <small>{{room.topic.name}}</small>
+                <hr>
+            </div>
+        {% endfor %}
+    </div>
+    </div>
+    
+    
+</div>
+
+ {% endblock content %}
+ ```
+ # studybud/base/views.py
+ ```py
+ from django.shortcuts import render,redirect
+from .models import Room,Topic
+from .forms import RoomForm
+from django.db.models import Q
+#rooms = [
+#    {'id': 1, 'name': 'lets learn python!'},
+#    {'id': 2, 'name': 'Design with me.'},
+#    {'id': 3, 'name': 'Frontend developer.'},
+#]
+
+def home(request):
+    q = request.GET.get('q') if request.GET.get('q') is not None else ''
+
+    rooms = Room.objects.filter(
+        Q(topic__name__icontains=q) |
+        Q(name__icontains=q)|
+        Q(description__icontains=q)
+        )
+    topics= Topic.objects.all()
+    room_count = rooms.count()
+    context = {'rooms': rooms,'topics':topics ,'room_count':room_count}
+    return render(request, 'base/home.html', context)
+
+def room(request,pk):
+    room = Room.objects.get(id=pk)
+    context = {'room': room}
+    return render(request, 'base/room.html', context)
+
+def createRoom(request):
+    form=RoomForm()
+    if request.method == 'POST': 
+        form = RoomForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('home')  
+    context = {"form":form}
+    return render(request, 'base/room_form.html', context)
+
+
+def updateRoom (request, pk):
+    room =Room.objects.get(id=pk)
+    form = RoomForm(instance=room)
+
+    if request.method == 'POST':
+        form = RoomForm(request.POST,instance=room)
+        if form.is_valid():
+            form.save()
+            return redirect('home') 
+        
+    context = {'form': form}
+    return render(request, 'base/room_form.html', context)
+     
+
+def deleteRoom(request, pk):
+     room =Room.objects.get(id=pk)
+     if request.method == 'POST':
+        room.delete()
+        return redirect('home')
+     return render(request, 'base/delete.html', {'obj': room})
+```
+we can search  and count the rooms by using GET method.
+```py
+# studybud/templates/navbar.html
+<a href="/">
+    <h1>LOGO</h1>
+</a>
+<form method="GET" action="{% url 'home' %}">
+    <input type="text" name="q" placeholder="Search Rooms..." />
+    <button type="submit">Search</button>
+</form>
+
+
+<hr>
+```
+
+
+
 
 
