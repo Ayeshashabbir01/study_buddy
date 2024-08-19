@@ -238,7 +238,7 @@ go to the admin panel.
 
 
 # `Modelling`
-In modelling , defining the structure of our database tables using Python classes. Each class represents a database table, and each attribute of the class represents a column in that table. This allows you to interact with your database using Python code .
+In modelling , defining the structure of our database tables using `Python classes`. Each class represents a `database table`, and each attribute of the class represents a `columns` in that table. This allows you to interact with your database using Python code .
 so, we will model our data in `models.py`.
 ```py 
 # create room in the model.py
@@ -257,7 +257,7 @@ class Room(models.Model):
     def _str_(self):
         return self.name 
 ```
-now we have to migrate our database and Register that room model to the admin.py.
+now we have to `migrate` our database and `Register` that room model to the admin.py.
 ```py
 python manage.py migrate
 python manage.py runserver
@@ -280,7 +280,7 @@ Steps:
 5. add room in the room model from admin panel.
 ```
 # `Now Adding more Models`
-  Each model represents different data, like users, posts, or comments. so, we can add more models to make the code easier to maintain and update easily.
+  Each model represents different data, like `users`, `posts`, or `comments`. so, we can add more models to make the code easier to maintain and update easily.
 ```py
 # models.py
 from django.db import models
@@ -317,12 +317,12 @@ class Message(models.Model):
     def __str__(self):
         return self.body[0:50]
 ```
-now we have to migrate our database and Register that model to the admin.py,
+now we have to `migrate our database` and `Register` that model to the admin.py,
 ```py
  python manage.py makemigrations
  python manage.py migrate
 ```
-when we can registering our model,this makes it easy to add, edit, and delete data directly from the admin panel.
+when we can registering our model,this makes it easy to `add`, `edit`, and `delete data` directly from the admin panel.
 ```py
 # admin.py
 from django.contrib import admin
@@ -1002,7 +1002,7 @@ def deleteRoom(request, pk):
         room.delete()
         return redirect('home')
      return render(request, 'base/delete.html', {'obj': room})
-     ```
+```
 
 
 

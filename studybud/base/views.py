@@ -159,12 +159,13 @@ def updateuser(request):
     form = UserForm(instance=user)
 
     if request.method == 'POST':
-        form = UserForm(request.POST, request.FILES, instance=User)
+        form = UserForm(request.POST, request.FILES, instance=user)  # Use `user` instead of `User`
         if form.is_valid():
             form.save()
             return redirect('user-profile', pk=user.id)
 
     return render(request, 'base/update-user.html', {'form': form})
+
 
 def topicsPage(request):
     q = request.GET.get('q') if request.GET.get('q') else ''
