@@ -1,8 +1,6 @@
-{% extends 'main.html' %}
-
-{% block content %}
-
-    <main class="delete-item layout">
+{% extends "main.html" %} 
+   {% block content %}
+   <main class="delete-item layout">
         <div class="container">
             <div class="layout__box">
                 <div class="layout__boxHeader">
@@ -20,7 +18,7 @@
                     </div>
                 </div>
                 <div class="layout__body">
-                    <form class="form"  method="POST" action="">
+                    <form class="form" method="POST" action="">
                         {% csrf_token %}
                         <div class="form__group">
                             <p>Are you sure you want to delete "{{ obj }}"?</p>
@@ -35,4 +33,5 @@
             </div>
         </div>
     </main>
+    <script src="script.js"></script>
     {% endblock content %}
