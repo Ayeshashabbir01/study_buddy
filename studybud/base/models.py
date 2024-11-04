@@ -13,7 +13,7 @@ class User(AbstractUser):
 class Topic(models.Model):
     name = models.CharField(max_length=200)
 
-    def _str_(self):
+    def __str__(self):
         return self.name
 
 class Room(models.Model):
@@ -28,7 +28,7 @@ class Room(models.Model):
     class Meta:
         ordering = ['-updated', '-created']
 
-    def _str_(self):
+    def __str__(self):
         return self.name
 
 class Message(models.Model):
@@ -41,5 +41,5 @@ class Message(models.Model):
     class Meta:
         ordering = ['-updated', '-created']
 
-    def _str_(self):
+    def __str__(self):
         return self.body[:50]
